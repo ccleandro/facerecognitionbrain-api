@@ -1,12 +1,20 @@
 const express = require("express");
+const dotenv = require("dotenv").config();
 const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
+const morgan = require("morgan");
 const knex = require("knex")({
   client: "pg",
+  //INFO FROM docker-compose.yml
+  //connection: process.env.POSTGRES_URI
   connection: {
-    host: "127.0.0.1",
-    user: "leandro",
-    password: "1234",
+    //host: process.env.POSTGRES_HOST,
+    host: process.env.DB_HOST,
+    //user: process.env.POSTGRES_USER,
+    user: process.env.DB_USER,
+    //password: process.env.POSTGRES_PASSWORD,
+    password: process.env.DB_PASS,
+    //database: process.env.POSTGRES_DB
     database: "smart-brain"
   }
 });
@@ -18,6 +26,7 @@ const image = require("./controllers/image");
 const app = express();
 
 app.use(express.json());
+app.use(morgan("combined"));
 app.use(cors());
 
 app.get("/", (req, res) => {
@@ -48,5 +57,5 @@ app.post("/imageUrl", (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log("App is running in port 3000");
+  console.log("App is running in port 3000!");
 });
