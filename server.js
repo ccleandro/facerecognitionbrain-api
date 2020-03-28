@@ -22,6 +22,7 @@ const register = require("./controllers/register");
 const signin = require("./controllers/signin");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
+const auth = require("./controllers/authorization");
 
 const app = express();
 
@@ -37,22 +38,27 @@ app.get("/", (req, res) => {
       res.send(data);
     });
 });
-//FIRST WAY TO CALL
-app.post("/signin", signin.handleSignin(knex, bcrypt));
+//FIRST WAY TO CALL HIGH ORDER FUNCTION - a function that returns another function
+app.post("/signin", signin.signinAuthentication(knex, bcrypt));
 //SECOND WAY TO CALL
 app.post("/register", (req, res) => {
   register.handleRegister(req, res, knex, bcrypt);
 });
 
-app.get("/profile/:id", (req, res) => {
+app.get("/profile/:id", auth.requireAuth, (req, res) => {
   profile.handleProfile(req, res, knex);
 });
 
-app.put("/image", (req, res) => {
+//TODO work with age and hobby
+app.post("/profile/:id", auth.requireAuth, (req, res) => {
+  profile.handleProfileUpdate(req, res, knex);
+});
+
+app.put("/image", auth.requireAuth, (req, res) => {
   image.handleImage(req, res, knex);
 });
 
-app.post("/imageUrl", (req, res) => {
+app.post("/imageUrl", auth.requireAuth, (req, res) => {
   image.handleApiCall(req, res);
 });
 

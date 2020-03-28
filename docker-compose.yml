@@ -9,17 +9,21 @@ services:
     command: npm start
     working_dir: /usr/src/facerecognitionbrain-api
     environment:
+      # POSTGRES_URI: postgres://leandro:1234@postgres:5432/smart-brain
       POSTGRES_USER: leandro
       POSTGRES_PASSWORD: 1234
       POSTGRES_DB: smart-brain
       POSTGRES_HOST: postgres
+      REDIS_URI: redis://redis:6379
     # links:
     #  - postgres
+    #  - redis
     ports:
       - "3000:3000"
     volumes:
       - ./:/usr/src/facerecognitionbrain-api
-      # Postgres
+
+  # Postgres
   postgres:
     # container_name: postgres
     environment:
@@ -28,6 +32,13 @@ services:
       POSTGRES_PASSWORD: 1234
       POSTGRES_DB: smart-brain
       POSTGRES_HOST: postgres
-    image: postgres
+    #image: postgres
+    build: ./postgres
     ports:
       - "5432:5432"
+
+  #Redis
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
